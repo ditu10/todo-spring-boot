@@ -5,8 +5,45 @@
     <title>Todo</title>
 </head>
 <body>
-    <section>
-        <h2 class="text-center">Todo App</h2>
-    </section>
+<section>
+    <h2 class="text-center">Todo App</h2>
+    <div>
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-title bg-primary">
+                        <p class="text-white text-center py-2 my-0">Total Todos</p>
+                    </div>
+                    <div class="card-body text-center fs-2">
+                        <p th:text="${todos.size()}"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-title bg-success">
+                        <p class="text-white text-center py-2 my-0">Completed Todos</p>
+                    </div>
+                    <div class="card-body text-center fs-2">
+                        <p th:text="${totalCompleted}"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-title bg-warning">
+                        <p class="text-white text-center py-2 my-0">Starred Todos</p>
+                    </div>
+                    <div class="card-body text-center fs-2">
+                        <p th:text="${totalStarred}"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
 </body>
 </html>
