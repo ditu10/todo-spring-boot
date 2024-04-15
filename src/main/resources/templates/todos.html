@@ -7,7 +7,7 @@
 <body>
 <section>
     <h2>Todo List</h2>
-    <div class="row">
+    <div class="row" style="max-height: 600px; overflow-y: auto ; border-bottom: 1px solid darkgrey">
         <p th:if="${todos.size()==0}">Todo List is Please Create Todo</p>
         <div class="col-lg-4 mb-4" th:each="todo : ${todos}">
             <div class="card h-100">
@@ -20,12 +20,12 @@
                                th:href="@{'/todos/' + ${todo.id} + '/completed' } ">
                                 <i class="fa-solid fa-circle-check"></i>
                             </a>
-                            <a class="text-decoration-none" th:href="@{'/todos/' + ${todo.id} + '/delete' } ">
-                                <i class="fa-solid fa-trash text-danger"></i>
-                            </a>
-                            <a th:class="${todo.isStarred? 'text-warning' : 'text-white'}"
+                            <a th:class="${todo.isStarred? 'text-warning text-decoration-none' : 'text-white text-decoration-none'}"
                                th:href="@{'/todos/' + ${todo.id} + '/starred'}">
                                 <i class="fa-regular fa-star"></i>
+                            </a>
+                            <a class="text-decoration-none" th:href="@{'/todos/' + ${todo.id} + '/delete' } ">
+                                <i class="fa-solid fa-trash text-danger"></i>
                             </a>
                         </div>
                     </div>
@@ -48,11 +48,14 @@
         <div>
             <form th:action="@{/add-todo}" th:method="post">
                 <div class="input-group mb-3">
-                    <input aria-describedby="description" aria-label="description" class="form-control"
-                           name="description"
-                           placeholder="Add Todo" type="text">
-                    <button class="btn btn-outline-primary">Add New</button>
+<!--                    <input aria-describedby="description" aria-label="description" class="form-control"-->
+<!--                           name="description"-->
+<!--                           placeholder="Add Todo" type="text">-->
+                    <textarea aria-describedby="description" aria-label="description" class="form-control"
+                           name="description" rows="4" placeholder="Add Todo" ></textarea>
+
                 </div>
+                <button class="btn btn-outline-primary">Add New</button>
             </form>
         </div>
     </div>
