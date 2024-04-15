@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: todos
+      author: Ditu
+      changes:
+        - createTable:
+            tableName: todos
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: is_completed
+                  type: BOOLEAN
+              - column:
+                  name: is_starred
+                  type: BOOLEAN
+        - addAutoIncrement:
+            tableName: todos
+            columnName: id
+            columnDataType: BIGINT
