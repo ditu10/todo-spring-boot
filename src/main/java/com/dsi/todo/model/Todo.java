@@ -19,15 +19,21 @@ public class Todo {
     private String description;
 
     @Column(name = "is_starred")
-    private boolean isStarred;
+    private Boolean isStarred = false;
 
     @Column(name = "is_completed")
-    private boolean isCompleted;
+    private Boolean isCompleted = false;
 
     public Todo() {
     }
 
     public Todo(String description, boolean isCompleted, boolean isStarred) {
+        this.description = description;
+        this.isCompleted = isCompleted;
+        this.isStarred = isStarred;
+    }
+    public Todo(long id,String description, boolean isCompleted, boolean isStarred) {
+        this.id = id;
         this.description = description;
         this.isCompleted = isCompleted;
         this.isStarred = isStarred;

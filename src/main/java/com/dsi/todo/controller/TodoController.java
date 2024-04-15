@@ -28,8 +28,8 @@ public class TodoController {
     public String index(Model model) {
         List<Todo> todos = (List<Todo>) model.getAttribute("todos");
         if (todos != null) {
-            int totalStarred = todos.stream().filter(Todo::isStarred).toList().size();
-            int totalCompleted = todos.stream().filter(Todo::isCompleted).toList().size();
+            int totalStarred = todos.stream().filter(Todo::getIsStarred).toList().size();
+            int totalCompleted = todos.stream().filter(Todo::getIsCompleted).toList().size();
             model.addAttribute("totalStarred", totalStarred);
             model.addAttribute("totalCompleted", totalCompleted);
         }
@@ -37,8 +37,22 @@ public class TodoController {
     }
 
     @PostMapping("/add-todo")
-    public String addTodoPage(@RequestParam String description, Model model) {
+    public String addTodoPage(@RequestParam String description,
+                              Model model) {
         todoService.addTodo(description);
+        return "redirect:/todos";
+    }
+
+    @GetMapping("/update-todo/{id}")
+    public String updateTodoPage(@PathVariable long id,
+                                 Model model) {
+        Todo todo = todoRepository.findById(id).get();
+        model.addAttribute("todo", todo);
+        return "updateTodoForm";
+    }
+    @PostMapping("/process-update")
+    public String processUpdate(@ModelAttribute Todo todo) {
+        todoRepository.save(todo);
         return "redirect:/todos";
     }
 
@@ -51,7 +65,7 @@ public class TodoController {
     @GetMapping("/todos/{id}/starred")
     public String toggleStarTodo(@PathVariable long id) {
         Todo todo = todoRepository.findById(id).get();
-        todo.setStarred(!todo.isStarred());
+        todo.setIsStarred(!todo.getIsStarred());
         todoRepository.save(todo);
         return "redirect:/todos";
     }
@@ -59,7 +73,7 @@ public class TodoController {
     @GetMapping("/todos/{id}/completed")
     public String toggleCompleteTodo(@PathVariable long id) {
         Todo todo = todoRepository.findById(id).get();
-        todo.setCompleted(!todo.isCompleted());
+        todo.setIsCompleted(!todo.getIsCompleted());
         todoRepository.save(todo);
         return "redirect:/todos";
     }
