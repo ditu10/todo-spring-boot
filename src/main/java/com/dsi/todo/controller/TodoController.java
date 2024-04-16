@@ -3,11 +3,15 @@ package com.dsi.todo.controller;
 import com.dsi.todo.model.Todo;
 import com.dsi.todo.repository.TodoRepository;
 import com.dsi.todo.service.TodoService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 public class TodoController {
@@ -24,6 +28,11 @@ public class TodoController {
         model.addAttribute("todos", todoRepository.findAll());
     }
 
+    @ModelAttribute
+    public Todo getTodo() {
+        return new Todo();
+    }
+
     @GetMapping("/")
     public String index(Model model) {
         List<Todo> todos = (List<Todo>) model.getAttribute("todos");
@@ -37,44 +46,85 @@ public class TodoController {
     }
 
     @PostMapping("/add-todo")
-    public String addTodoPage(@RequestParam String description,
-                              Model model) {
-        todoService.addTodo(description);
+    public String addTodoPage(@Valid @ModelAttribute Todo todo,
+                              BindingResult result,
+                              Model model,
+                              RedirectAttributes attributes) {
+        if(result.hasErrors()) {
+            attributes.addFlashAttribute(BindingResult.class.getName() +".todo", result);
+            attributes.addFlashAttribute("todo", todo);
+            return "redirect:/todos";
+        }
+        try {
+            todoRepository.save(todo);
+        }
+        catch(Exception e) {
+            model.addAttribute("error", e);
+            return "error";
+        }
         return "redirect:/todos";
     }
 
     @GetMapping("/update-todo/{id}")
     public String updateTodoPage(@PathVariable long id,
                                  Model model) {
-        Todo todo = todoRepository.findById(id).get();
-        model.addAttribute("todo", todo);
+        try{
+            Todo todo = todoRepository.findById(id).get();
+            model.addAttribute("todo", todo);
+        } catch (Exception e) {
+            model.addAttribute("error", e);
+            return "error";
+        }
+
         return "updateTodoForm";
     }
     @PostMapping("/process-update")
-    public String processUpdate(@ModelAttribute Todo todo) {
+    public String processUpdate(@Valid @ModelAttribute Todo todo,
+                                BindingResult result,
+                                RedirectAttributes attributes) {
+        if(result.hasErrors()) {
+            attributes.addFlashAttribute(BindingResult.class.getName()+".todo", result);
+            attributes.addFlashAttribute("todo", todo);
+            return "redirect:/update-todo/"+todo.getId();
+        }
         todoRepository.save(todo);
         return "redirect:/todos";
     }
 
     @GetMapping("/todos/{id}/delete")
-    public String deleteTodo(@PathVariable long id) {
-        todoRepository.deleteById(id);
+    public String deleteTodo(@PathVariable long id, Model model) {
+        try {
+            todoRepository.deleteById(id);
+        }catch (Exception e) {
+            model.addAttribute("error", e);
+            return "error";
+        }
         return "redirect:/todos";
     }
 
     @GetMapping("/todos/{id}/starred")
-    public String toggleStarTodo(@PathVariable long id) {
-        Todo todo = todoRepository.findById(id).get();
-        todo.setIsStarred(!todo.getIsStarred());
-        todoRepository.save(todo);
+    public String toggleStarTodo(@PathVariable long id, Model model) {
+        try{
+            Todo todo = todoRepository.findById(id).get();
+            todo.setIsStarred(!todo.getIsStarred());
+            todoRepository.save(todo);
+        } catch (Exception e) {
+            model.addAttribute("error", e);
+            return "error";
+        }
         return "redirect:/todos";
     }
 
     @GetMapping("/todos/{id}/completed")
-    public String toggleCompleteTodo(@PathVariable long id) {
-        Todo todo = todoRepository.findById(id).get();
-        todo.setIsCompleted(!todo.getIsCompleted());
-        todoRepository.save(todo);
+    public String toggleCompleteTodo(@PathVariable long id, Model model) {
+        try {
+            Todo todo = todoRepository.findById(id).get();
+            todo.setIsCompleted(!todo.getIsCompleted());
+            todoRepository.save(todo);
+        } catch (Exception e) {
+            model.addAttribute("error", e);
+            return "error";
+        }
         return "redirect:/todos";
     }
 

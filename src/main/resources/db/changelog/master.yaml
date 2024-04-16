@@ -2,3 +2,6 @@ databaseChangeLog:
   - include:
       file: classpath:/db/changelog/todos.yaml
       relativeToChangelogFile: false
+  - include:
+      file: classpath:/db/changelog/add_created_at_in_todos.yaml
+      relativeToChangelogFile: false
