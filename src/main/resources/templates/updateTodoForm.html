@@ -13,7 +13,7 @@
             </div>
             <div class="mb-3">
                 <label for="description" class="form-label">Description</label>
-                <textarea rows="4"
+                <textarea rows="3"
                       th:text="${todo.description}" class="form-control"
                       th:classappend="${#fields?.hasErrors('description')} ? 'is-invalid' : ''"
                       name="description" id="description"></textarea>

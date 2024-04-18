@@ -3,13 +3,19 @@ package com.dsi.todo.controller;
 import com.dsi.todo.model.Todo;
 import com.dsi.todo.repository.TodoRepository;
 import com.dsi.todo.service.TodoService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,10 +34,6 @@ public class TodoController {
         model.addAttribute("todos", todoRepository.findAll());
     }
 
-    @ModelAttribute
-    public Todo getTodo() {
-        return new Todo();
-    }
 
     @GetMapping("/")
     public String index(Model model) {
@@ -69,8 +71,11 @@ public class TodoController {
     public String updateTodoPage(@PathVariable long id,
                                  Model model) {
         try{
-            Todo todo = todoRepository.findById(id).get();
-            model.addAttribute("todo", todo);
+            if(model.getAttribute("todo") == null) {
+                Todo todo = todoRepository.findById(id).get();
+                model.addAttribute("todo", todo);
+            }
+
         } catch (Exception e) {
             model.addAttribute("error", e);
             return "error";
@@ -129,7 +134,21 @@ public class TodoController {
     }
 
     @GetMapping("/todos")
-    public String listTodos() {
+    public String listTodos(Model model) {
+        if(model.getAttribute("todo") == null) {
+            model.addAttribute("todo", new Todo());
+        }
         return "todos";
+    }
+
+    @PostMapping("/jasperpdf/export")
+    public void createPDF(HttpServletResponse response) throws IOException, JRException {
+        response.setContentType("application/pdf");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd:hh:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment;filename=todo_" + currentDateTime + ".pdf";
+        response.setHeader(headerKey, headerValue);
+        todoService.exportJasperReport(response);
     }
 }
